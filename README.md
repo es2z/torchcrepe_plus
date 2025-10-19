@@ -1,3 +1,6 @@
+# About this Fork
+In the original Torchcrepe, only "tiny" and "full" weightings were available, but this version supports "small", "medium", and "large" weightings.
+
 <h1 align="center">torchcrepe</h1>
 <div align="center">
 
