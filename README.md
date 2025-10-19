@@ -41,7 +41,7 @@ hop_length = int(sr / 200.)
 fmin = 50
 fmax = 550
 
-# Select a model capacity--one of "tiny" or "full"
+# Select a model capacity--one of "tiny", "small", "medium", "large", or "full"
 model = 'tiny'
 
 # Choose a device to use for inference
