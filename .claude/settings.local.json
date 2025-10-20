@@ -47,7 +47,22 @@
       "Bash(pip uninstall torchcrepe -y)",
       "Bash(pip install dist/torchcrepe-0.0.25-py3-none-any.whl)",
       "Bash(python test_installation.py)",
-      "Bash(awk '{print \"\"\"\"  \"\"\"\" $9 \"\"\"\" - \"\"\"\" $5}')"
+      "Bash(awk '{print \"\"\"\"  \"\"\"\" $9 \"\"\"\" - \"\"\"\" $5}')",
+      "Bash(curl -s https://api.github.com/repos/marl/crepe/contents/crepe)",
+      "Bash(curl -s https://api.github.com/repos/marl/crepe/git/trees/master?recursive=1)",
+      "Bash(curl -s https://raw.githubusercontent.com/marl/crepe/master/crepe/core.py)",
+      "Bash(curl -s https://api.github.com/repos/marl/crepe/releases)",
+      "Bash(curl -s https://raw.githubusercontent.com/marl/crepe/master/README.md)",
+      "Bash(git clone --depth 1 https://github.com/marl/crepe.git)",
+      "Bash(mkdir -p C:/dev/torchcrepe_plus/temp)",
+      "Bash(for model in small medium large)",
+      "Bash(do python inspect_weights.py model-$model.h5)",
+      "Bash(done)",
+      "Bash(python compare_weights.py)",
+      "Bash(python create_regular_model.py)",
+      "Bash(python test_regular_model.py)",
+      "Bash(python final_test.py)",
+      "Bash(python -m zipfile -l dist/torchcrepe-0.0.26-py3-none-any.whl)"
     ],
     "deny": [],
     "ask": []
