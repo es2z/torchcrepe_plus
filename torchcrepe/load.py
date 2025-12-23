@@ -13,8 +13,15 @@ def audio(filename):
     return torchaudio.load(filename)
 
 
-def model(device, capacity='full'):
-    """Preloads model from disk"""
+def model(device, capacity='full', compile_model=False):
+    """Preloads model from disk
+
+    Arguments
+        device: The device to load the model on
+        capacity: One of 'tiny', 'small', 'medium', 'large', 'full'
+        compile_model: Whether to use torch.compile for faster inference
+                       (requires PyTorch 2.0+, recommended for batch processing)
+    """
     # Bind model and capacity
     torchcrepe.infer.capacity = capacity
     torchcrepe.infer.model = torchcrepe.Crepe(capacity)
@@ -29,3 +36,11 @@ def model(device, capacity='full'):
 
     # Eval mode
     torchcrepe.infer.model.eval()
+
+    # Optional: compile model for faster inference (PyTorch 2.0+)
+    if compile_model and hasattr(torch, 'compile'):
+        torchcrepe.infer.model = torch.compile(
+            torchcrepe.infer.model,
+            dynamic=True,
+            mode='max-autotune'
+        )

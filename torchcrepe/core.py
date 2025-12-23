@@ -57,7 +57,8 @@ def predict(audio,
             return_periodicity=False,
             batch_size=None,
             device='cpu',
-            pad=True):
+            pad=True,
+            compile_model=False):
     """Performs pitch estimation
 
     Arguments
@@ -85,6 +86,9 @@ def predict(audio,
             The device used to run inference
         pad (bool)
             Whether to zero-pad the audio
+        compile_model (bool)
+            Whether to use torch.compile for faster inference
+            (requires PyTorch 2.0+, recommended for batch processing)
 
     Returns
         pitch (torch.tensor [shape=(1, 1 + int(time // hop_length))])
@@ -117,7 +121,7 @@ def predict(audio,
         for frames in generator:
 
             # Infer independent probabilities for each pitch bin
-            probabilities = infer(frames, model, device, embed=False)
+            probabilities = infer(frames, model, device, embed=False, compile_model=compile_model)
 
             # shape=(batch, 360, time / hop_length)
             probabilities = probabilities.reshape(
@@ -159,7 +163,8 @@ def predict_from_file(audio_file,
                       return_periodicity=False,
                       batch_size=None,
                       device='cpu',
-                      pad=True):
+                      pad=True,
+                      compile_model=False):
     """Performs pitch estimation from file on disk
 
     Arguments
@@ -185,6 +190,9 @@ def predict_from_file(audio_file,
             The device used to run inference
         pad (bool)
             Whether to zero-pad the audio
+        compile_model (bool)
+            Whether to use torch.compile for faster inference
+            (requires PyTorch 2.0+, recommended for batch processing)
 
     Returns
         pitch (torch.tensor [shape=(1, 1 + int(time // hop_length))])
@@ -206,7 +214,8 @@ def predict_from_file(audio_file,
                    return_periodicity,
                    batch_size,
                    device,
-                   pad)
+                   pad,
+                   compile_model)
 
 
 def predict_from_file_to_file(audio_file,
@@ -220,7 +229,8 @@ def predict_from_file_to_file(audio_file,
                               decoder=torchcrepe.decode.viterbi,
                               batch_size=None,
                               device='cpu',
-                              pad=True):
+                              pad=True,
+                              compile_model=False):
     """Performs pitch estimation from file on disk
 
     Arguments
@@ -248,6 +258,9 @@ def predict_from_file_to_file(audio_file,
             The device used to run inference
         pad (bool)
             Whether to zero-pad the audio
+        compile_model (bool)
+            Whether to use torch.compile for faster inference
+            (requires PyTorch 2.0+, recommended for batch processing)
     """
     # Deprecate output_harmonicity_file
     if output_harmonicity_file is not None:
@@ -271,7 +284,8 @@ def predict_from_file_to_file(audio_file,
                                    output_periodicity_file is not None,
                                    batch_size,
                                    device,
-                                   pad)
+                                   pad,
+                                   compile_model)
 
     # Save to disk
     if output_periodicity_file is not None:
@@ -292,7 +306,8 @@ def predict_from_files_to_files(audio_files,
                                 decoder=torchcrepe.decode.viterbi,
                                 batch_size=None,
                                 device='cpu',
-                                pad=True):
+                                pad=True,
+                                compile_model=False):
     """Performs pitch estimation from files on disk without reloading model
 
     Arguments
@@ -320,6 +335,9 @@ def predict_from_files_to_files(audio_files,
             The device used to run inference
         pad (bool)
             Whether to zero-pad the audio
+        compile_model (bool)
+            Whether to use torch.compile for faster inference
+            (requires PyTorch 2.0+, recommended for batch processing)
     """
     # Deprecate output_harmonicity_files
     if output_harmonicity_files is not None:
@@ -352,7 +370,8 @@ def predict_from_files_to_files(audio_files,
                                   decoder,
                                   batch_size,
                                   device,
-                                  pad)
+                                  pad,
+                                  compile_model)
 
 ###############################################################################
 # Crepe pitch embedding
@@ -365,7 +384,8 @@ def embed(audio,
           model='full',
           batch_size=None,
           device='cpu',
-          pad=True):
+          pad=True,
+          compile_model=False):
     """Embeds audio to the output of CREPE's fifth maxpool layer
 
     Arguments
@@ -383,6 +403,9 @@ def embed(audio,
             The device to run inference on
         pad (bool)
             Whether to zero-pad the audio
+        compile_model (bool)
+            Whether to use torch.compile for faster inference
+            (requires PyTorch 2.0+, recommended for batch processing)
 
     Returns
         embedding (torch.tensor [shape=(1,
@@ -400,7 +423,7 @@ def embed(audio,
     for frames in generator:
 
         # Infer pitch embeddings
-        embedding = infer(frames, model, device, embed=True)
+        embedding = infer(frames, model, device, embed=True, compile_model=compile_model)
 
         # shape=(batch, time / hop_length, 32, embedding_size)
         result = embedding.reshape(audio.size(0), frames.size(0), 32, -1)
@@ -417,7 +440,8 @@ def embed_from_file(audio_file,
                     model='full',
                     batch_size=None,
                     device='cpu',
-                    pad=True):
+                    pad=True,
+                    compile_model=False):
     """Embeds audio from disk to the output of CREPE's fifth maxpool layer
 
     Arguments
@@ -433,6 +457,9 @@ def embed_from_file(audio_file,
             The device to run inference on
         pad (bool)
             Whether to zero-pad the audio
+        compile_model (bool)
+            Whether to use torch.compile for faster inference
+            (requires PyTorch 2.0+, recommended for batch processing)
 
     Returns
         embedding (torch.tensor [shape=(1,
@@ -448,7 +475,8 @@ def embed_from_file(audio_file,
                  model,
                  batch_size,
                  device,
-                 pad)
+                 pad,
+                 compile_model)
 
 
 def embed_from_file_to_file(audio_file,
@@ -457,7 +485,8 @@ def embed_from_file_to_file(audio_file,
                             model='full',
                             batch_size=None,
                             device='cpu',
-                            pad=True):
+                            pad=True,
+                            compile_model=False):
     """Embeds audio from disk and saves to disk
 
     Arguments
@@ -475,6 +504,9 @@ def embed_from_file_to_file(audio_file,
             The device to run inference on
         pad (bool)
             Whether to zero-pad the audio
+        compile_model (bool)
+            Whether to use torch.compile for faster inference
+            (requires PyTorch 2.0+, recommended for batch processing)
     """
     # No use computing gradients if we're just saving to file
     with torch.no_grad():
@@ -485,7 +517,8 @@ def embed_from_file_to_file(audio_file,
                                     model,
                                     batch_size,
                                     device,
-                                    pad)
+                                    pad,
+                                    compile_model)
 
         # Save to disk
         torch.save(embedding.detach(), output_file)
@@ -497,7 +530,8 @@ def embed_from_files_to_files(audio_files,
                               model='full',
                               batch_size=None,
                               device='cpu',
-                              pad=True):
+                              pad=True,
+                              compile_model=False):
     """Embeds audio from disk and saves to disk without reloading model
 
     Arguments
@@ -515,6 +549,9 @@ def embed_from_files_to_files(audio_files,
             The device to run inference on
         pad (bool)
             Whether to zero-pad the audio
+        compile_model (bool)
+            Whether to use torch.compile for faster inference
+            (requires PyTorch 2.0+, recommended for batch processing)
     """
     # Setup iterator
     iterator = zip(audio_files, output_files)
@@ -528,7 +565,8 @@ def embed_from_files_to_files(audio_files,
                                 model,
                                 batch_size,
                                 device,
-                                pad)
+                                pad,
+                                compile_model)
 
 
 ###############################################################################
@@ -536,7 +574,7 @@ def embed_from_files_to_files(audio_files,
 ###############################################################################
 
 
-def infer(frames, model='full', device='cpu', embed=False):
+def infer(frames, model='full', device='cpu', embed=False, compile_model=False):
     """Forward pass through the model
 
     Arguments
@@ -546,6 +584,9 @@ def infer(frames, model='full', device='cpu', embed=False):
             The model capacity. One of 'full' or 'tiny'.
         embed (bool)
             Whether to stop inference at the intermediate embedding layer
+        compile_model (bool)
+            Whether to use torch.compile for faster inference
+            (requires PyTorch 2.0+, recommended for batch processing)
 
     Returns
         logits (torch.tensor [shape=(1 + int(time // hop_length), 360)]) OR
@@ -555,7 +596,7 @@ def infer(frames, model='full', device='cpu', embed=False):
     # Load the model if necessary
     if not hasattr(infer, 'model') or not hasattr(infer, 'capacity') or \
        (hasattr(infer, 'capacity') and infer.capacity != model):
-        torchcrepe.load.model(device, model)
+        torchcrepe.load.model(device, model, compile_model)
 
     # Move model to correct device (no-op if devices are the same)
     infer.model = infer.model.to(device)
