@@ -42,5 +42,5 @@ def model(device, capacity='full', compile_model=False):
         torchcrepe.infer.model = torch.compile(
             torchcrepe.infer.model,
             dynamic=True,
-            mode='max-autotune'
+            mode='reduce-overhead'
         )
