@@ -30,6 +30,10 @@ class Crepe(torch.nn.Module):
             in_channels = [1, 512, 64, 64, 64, 128]
             out_channels = [512, 64, 64, 64, 128, 256]
             self.in_features = 1024
+        elif model == 'regular':
+            in_channels = [1, 384, 48, 48, 48, 96]
+            out_channels = [384, 48, 48, 48, 96, 192]
+            self.in_features = 768
         elif model == 'small':
             in_channels = [1, 256, 32, 32, 32, 64]
             out_channels = [256, 32, 32, 32, 64, 128]
