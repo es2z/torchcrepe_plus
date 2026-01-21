@@ -1,5 +1,30 @@
 # About this Fork
-In the original Torchcrepe, only "tiny" and "full" weightings were available, but this version supports "small", "medium", and "large" weightings.
+
+This is a fork of the original [torchcrepe](https://github.com/maxrmorrison/torchcrepe) with the following enhancements:
+
+### Additional Model Sizes
+In the original Torchcrepe, only "tiny" and "full" weightings were available, but this version supports **"small"**, **"medium"**, and **"large"** weightings as well.
+
+### torch.compile Support (PyTorch 2.0+)
+This fork adds optional `torch.compile` support for faster inference. You can enable compilation and select the optimization mode:
+
+```python
+# Enable torch.compile with default mode
+pitch = torchcrepe.predict(audio, sr, hop_length, fmin, fmax, model,
+                           device=device,
+                           compile_model=True)
+
+# Enable torch.compile with a specific mode
+pitch = torchcrepe.predict(audio, sr, hop_length, fmin, fmax, model,
+                           device=device,
+                           compile_model=True,
+                           compile_mode='reduce-overhead')
+```
+
+**Available compile modes:**
+- `'default'` - Standard compilation (default)
+- `'reduce-overhead'` - Reduces compilation overhead, good for repeated inference
+- `'max-autotune'` - Maximum optimization, longer compilation time but potentially faster execution
 
 <h1 align="center">torchcrepe</h1>
 <div align="center">
@@ -66,6 +91,46 @@ pitch = torchcrepe.predict(audio,
 
 A periodicity metric similar to the Crepe confidence score can also be
 extracted by passing `return_periodicity=True` to `torchcrepe.predict`.
+
+
+### Using torch.compile for Faster Inference
+
+For PyTorch 2.0+, you can enable `torch.compile` to speed up inference:
+
+```python
+# Basic usage with torch.compile
+pitch = torchcrepe.predict(audio,
+                           sr,
+                           hop_length,
+                           fmin,
+                           fmax,
+                           model,
+                           batch_size=batch_size,
+                           device=device,
+                           compile_model=True)
+
+# With a specific compile mode for better performance
+pitch = torchcrepe.predict(audio,
+                           sr,
+                           hop_length,
+                           fmin,
+                           fmax,
+                           model,
+                           batch_size=batch_size,
+                           device=device,
+                           compile_model=True,
+                           compile_mode='reduce-overhead')
+```
+
+The `compile_model` and `compile_mode` parameters are available in all prediction and embedding functions:
+- `torchcrepe.predict()`
+- `torchcrepe.predict_from_file()`
+- `torchcrepe.predict_from_file_to_file()`
+- `torchcrepe.predict_from_files_to_files()`
+- `torchcrepe.embed()`
+- `torchcrepe.embed_from_file()`
+- `torchcrepe.embed_from_file_to_file()`
+- `torchcrepe.embed_from_files_to_files()`
 
 
 ### Decoding
@@ -182,6 +247,8 @@ usage: python -m torchcrepe
     [--decoder DECODER]
     [--gpu GPU]
     [--no_pad]
+    [--compile_model]
+    [--compile_mode {default,reduce-overhead,max-autotune}]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -196,11 +263,33 @@ optional arguments:
   --embed               Performs embedding instead of pitch prediction
   --fmin FMIN           The minimum frequency allowed
   --fmax FMAX           The maximum frequency allowed
-  --model MODEL         The model capacity. One of "tiny" or "full"
+  --model MODEL         The model capacity. One of "tiny", "small", "medium", "large", or "full"
   --decoder DECODER     The decoder to use. One of "argmax", "viterbi", or
                         "weighted_argmax"
   --gpu GPU             The gpu to perform inference on
   --no_pad              Whether to pad the audio
+  --compile_model       Use torch.compile for faster inference (requires PyTorch 2.0+)
+  --compile_mode {default,reduce-overhead,max-autotune}
+                        The torch.compile mode to use when --compile_model is enabled
+```
+
+**Example with torch.compile:**
+
+```bash
+# Basic inference with torch.compile enabled
+python -m torchcrepe \
+    --audio_files input.wav \
+    --output_files pitch.pt \
+    --gpu 0 \
+    --compile_model
+
+# With a specific compile mode
+python -m torchcrepe \
+    --audio_files input.wav \
+    --output_files pitch.pt \
+    --gpu 0 \
+    --compile_model \
+    --compile_mode reduce-overhead
 ```
 
 
@@ -215,12 +304,12 @@ pytest
 
 
 ## References
-[1] J. W. Kim, J. Salamon, P. Li, and J. P. Bello, “Crepe: A
-Convolutional Representation for Pitch Estimation,” in 2018 IEEE
+[1] J. W. Kim, J. Salamon, P. Li, and J. P. Bello, "Crepe: A
+Convolutional Representation for Pitch Estimation," in 2018 IEEE
 International Conference on Acoustics, Speech and Signal
 Processing (ICASSP).
 
 [2] J. H. Engel, L. Hantrakul, C. Gu, and A. Roberts,
-“DDSP: Differentiable Digital Signal Processing,” in
+"DDSP: Differentiable Digital Signal Processing," in
 2020 International Conference on Learning
 Representations (ICLR).
