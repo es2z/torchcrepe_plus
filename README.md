@@ -1,5 +1,30 @@
 # About this Fork
-In the original Torchcrepe, only "tiny" and "full" weightings were available, but this version supports "small", "medium", and "large" weightings.
+
+This is a fork of the original [torchcrepe](https://github.com/maxrmorrison/torchcrepe) with the following enhancements:
+
+### Additional Model Sizes
+In the original Torchcrepe, only "tiny" and "full" weightings were available, but this version supports **"small"**, **"medium"**, and **"large"** weightings as well.
+
+### torch.compile Support (PyTorch 2.0+)
+This fork adds optional `torch.compile` support for faster inference. You can enable compilation and select the optimization mode:
+
+```python
+# Enable torch.compile with default mode
+pitch = torchcrepe.predict(audio, sr, hop_length, fmin, fmax, model,
+                           device=device,
+                           compile_model=True)
+
+# Enable torch.compile with a specific mode
+pitch = torchcrepe.predict(audio, sr, hop_length, fmin, fmax, model,
+                           device=device,
+                           compile_model=True,
+                           compile_mode='reduce-overhead')
+```
+
+**Available compile modes:**
+- `'default'` - Standard compilation (default)
+- `'reduce-overhead'` - Reduces compilation overhead, good for repeated inference
+- `'max-autotune'` - Maximum optimization, longer compilation time but potentially faster execution
 
 <h1 align="center">torchcrepe</h1>
 <div align="center">
