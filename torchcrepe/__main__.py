@@ -79,6 +79,15 @@ def parse_args():
         '--no_pad',
         action='store_true',
         help='Whether to pad the audio')
+    parser.add_argument(
+        '--compile_model',
+        action='store_true',
+        help='Use torch.compile for faster inference (requires PyTorch 2.0+)')
+    parser.add_argument(
+        '--compile_mode',
+        default='default',
+        choices=['default', 'reduce-overhead', 'max-autotune'],
+        help='The torch.compile mode to use when --compile_model is enabled')
 
     return parser.parse_args()
 
@@ -128,7 +137,9 @@ def main():
                                              args.model,
                                              args.batch_size,
                                              device,
-                                             not args.no_pad)
+                                             not args.no_pad,
+                                             args.compile_model,
+                                             args.compile_mode)
     else:
         torchcrepe.predict_from_files_to_files(args.audio_files,
                                                args.output_files,
@@ -141,7 +152,9 @@ def main():
                                                decoder,
                                                args.batch_size,
                                                device,
-                                               not args.no_pad)
+                                               not args.no_pad,
+                                               args.compile_model,
+                                               args.compile_mode)
 
 
 # Run module entry point

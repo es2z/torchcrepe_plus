@@ -58,7 +58,8 @@ def predict(audio,
             batch_size=None,
             device='cpu',
             pad=True,
-            compile_model=False):
+            compile_model=False,
+            compile_mode='default'):
     """Performs pitch estimation
 
     Arguments
@@ -89,6 +90,9 @@ def predict(audio,
         compile_model (bool)
             Whether to use torch.compile for faster inference
             (requires PyTorch 2.0+, recommended for batch processing)
+        compile_mode (string)
+            The torch.compile mode to use when compile_model is True.
+            One of 'default', 'reduce-overhead', or 'max-autotune'.
 
     Returns
         pitch (torch.tensor [shape=(1, 1 + int(time // hop_length))])
@@ -121,7 +125,7 @@ def predict(audio,
         for frames in generator:
 
             # Infer independent probabilities for each pitch bin
-            probabilities = infer(frames, model, device, embed=False, compile_model=compile_model)
+            probabilities = infer(frames, model, device, embed=False, compile_model=compile_model, compile_mode=compile_mode)
 
             # shape=(batch, 360, time / hop_length)
             probabilities = probabilities.reshape(
@@ -164,7 +168,8 @@ def predict_from_file(audio_file,
                       batch_size=None,
                       device='cpu',
                       pad=True,
-                      compile_model=False):
+                      compile_model=False,
+                      compile_mode='default'):
     """Performs pitch estimation from file on disk
 
     Arguments
@@ -193,6 +198,9 @@ def predict_from_file(audio_file,
         compile_model (bool)
             Whether to use torch.compile for faster inference
             (requires PyTorch 2.0+, recommended for batch processing)
+        compile_mode (string)
+            The torch.compile mode to use when compile_model is True.
+            One of 'default', 'reduce-overhead', or 'max-autotune'.
 
     Returns
         pitch (torch.tensor [shape=(1, 1 + int(time // hop_length))])
@@ -215,7 +223,8 @@ def predict_from_file(audio_file,
                    batch_size,
                    device,
                    pad,
-                   compile_model)
+                   compile_model,
+                   compile_mode)
 
 
 def predict_from_file_to_file(audio_file,
@@ -230,7 +239,8 @@ def predict_from_file_to_file(audio_file,
                               batch_size=None,
                               device='cpu',
                               pad=True,
-                              compile_model=False):
+                              compile_model=False,
+                              compile_mode='default'):
     """Performs pitch estimation from file on disk
 
     Arguments
@@ -261,6 +271,9 @@ def predict_from_file_to_file(audio_file,
         compile_model (bool)
             Whether to use torch.compile for faster inference
             (requires PyTorch 2.0+, recommended for batch processing)
+        compile_mode (string)
+            The torch.compile mode to use when compile_model is True.
+            One of 'default', 'reduce-overhead', or 'max-autotune'.
     """
     # Deprecate output_harmonicity_file
     if output_harmonicity_file is not None:
@@ -285,7 +298,8 @@ def predict_from_file_to_file(audio_file,
                                    batch_size,
                                    device,
                                    pad,
-                                   compile_model)
+                                   compile_model,
+                                   compile_mode)
 
     # Save to disk
     if output_periodicity_file is not None:
@@ -307,7 +321,8 @@ def predict_from_files_to_files(audio_files,
                                 batch_size=None,
                                 device='cpu',
                                 pad=True,
-                                compile_model=False):
+                                compile_model=False,
+                                compile_mode='default'):
     """Performs pitch estimation from files on disk without reloading model
 
     Arguments
@@ -338,6 +353,9 @@ def predict_from_files_to_files(audio_files,
         compile_model (bool)
             Whether to use torch.compile for faster inference
             (requires PyTorch 2.0+, recommended for batch processing)
+        compile_mode (string)
+            The torch.compile mode to use when compile_model is True.
+            One of 'default', 'reduce-overhead', or 'max-autotune'.
     """
     # Deprecate output_harmonicity_files
     if output_harmonicity_files is not None:
@@ -371,7 +389,8 @@ def predict_from_files_to_files(audio_files,
                                   batch_size,
                                   device,
                                   pad,
-                                  compile_model)
+                                  compile_model,
+                                  compile_mode)
 
 ###############################################################################
 # Crepe pitch embedding
@@ -385,7 +404,8 @@ def embed(audio,
           batch_size=None,
           device='cpu',
           pad=True,
-          compile_model=False):
+          compile_model=False,
+          compile_mode='default'):
     """Embeds audio to the output of CREPE's fifth maxpool layer
 
     Arguments
@@ -406,6 +426,9 @@ def embed(audio,
         compile_model (bool)
             Whether to use torch.compile for faster inference
             (requires PyTorch 2.0+, recommended for batch processing)
+        compile_mode (string)
+            The torch.compile mode to use when compile_model is True.
+            One of 'default', 'reduce-overhead', or 'max-autotune'.
 
     Returns
         embedding (torch.tensor [shape=(1,
@@ -423,7 +446,7 @@ def embed(audio,
     for frames in generator:
 
         # Infer pitch embeddings
-        embedding = infer(frames, model, device, embed=True, compile_model=compile_model)
+        embedding = infer(frames, model, device, embed=True, compile_model=compile_model, compile_mode=compile_mode)
 
         # shape=(batch, time / hop_length, 32, embedding_size)
         result = embedding.reshape(audio.size(0), frames.size(0), 32, -1)
@@ -441,7 +464,8 @@ def embed_from_file(audio_file,
                     batch_size=None,
                     device='cpu',
                     pad=True,
-                    compile_model=False):
+                    compile_model=False,
+                    compile_mode='default'):
     """Embeds audio from disk to the output of CREPE's fifth maxpool layer
 
     Arguments
@@ -460,6 +484,9 @@ def embed_from_file(audio_file,
         compile_model (bool)
             Whether to use torch.compile for faster inference
             (requires PyTorch 2.0+, recommended for batch processing)
+        compile_mode (string)
+            The torch.compile mode to use when compile_model is True.
+            One of 'default', 'reduce-overhead', or 'max-autotune'.
 
     Returns
         embedding (torch.tensor [shape=(1,
@@ -476,7 +503,8 @@ def embed_from_file(audio_file,
                  batch_size,
                  device,
                  pad,
-                 compile_model)
+                 compile_model,
+                 compile_mode)
 
 
 def embed_from_file_to_file(audio_file,
@@ -486,7 +514,8 @@ def embed_from_file_to_file(audio_file,
                             batch_size=None,
                             device='cpu',
                             pad=True,
-                            compile_model=False):
+                            compile_model=False,
+                            compile_mode='default'):
     """Embeds audio from disk and saves to disk
 
     Arguments
@@ -507,6 +536,9 @@ def embed_from_file_to_file(audio_file,
         compile_model (bool)
             Whether to use torch.compile for faster inference
             (requires PyTorch 2.0+, recommended for batch processing)
+        compile_mode (string)
+            The torch.compile mode to use when compile_model is True.
+            One of 'default', 'reduce-overhead', or 'max-autotune'.
     """
     # No use computing gradients if we're just saving to file
     with torch.no_grad():
@@ -518,7 +550,8 @@ def embed_from_file_to_file(audio_file,
                                     batch_size,
                                     device,
                                     pad,
-                                    compile_model)
+                                    compile_model,
+                                    compile_mode)
 
         # Save to disk
         torch.save(embedding.detach(), output_file)
@@ -531,7 +564,8 @@ def embed_from_files_to_files(audio_files,
                               batch_size=None,
                               device='cpu',
                               pad=True,
-                              compile_model=False):
+                              compile_model=False,
+                              compile_mode='default'):
     """Embeds audio from disk and saves to disk without reloading model
 
     Arguments
@@ -552,6 +586,9 @@ def embed_from_files_to_files(audio_files,
         compile_model (bool)
             Whether to use torch.compile for faster inference
             (requires PyTorch 2.0+, recommended for batch processing)
+        compile_mode (string)
+            The torch.compile mode to use when compile_model is True.
+            One of 'default', 'reduce-overhead', or 'max-autotune'.
     """
     # Setup iterator
     iterator = zip(audio_files, output_files)
@@ -566,7 +603,8 @@ def embed_from_files_to_files(audio_files,
                                 batch_size,
                                 device,
                                 pad,
-                                compile_model)
+                                compile_model,
+                                compile_mode)
 
 
 ###############################################################################
@@ -574,7 +612,7 @@ def embed_from_files_to_files(audio_files,
 ###############################################################################
 
 
-def infer(frames, model='full', device='cpu', embed=False, compile_model=False):
+def infer(frames, model='full', device='cpu', embed=False, compile_model=False, compile_mode='default'):
     """Forward pass through the model
 
     Arguments
@@ -587,6 +625,9 @@ def infer(frames, model='full', device='cpu', embed=False, compile_model=False):
         compile_model (bool)
             Whether to use torch.compile for faster inference
             (requires PyTorch 2.0+, recommended for batch processing)
+        compile_mode (string)
+            The torch.compile mode to use when compile_model is True.
+            One of 'default', 'reduce-overhead', or 'max-autotune'.
 
     Returns
         logits (torch.tensor [shape=(1 + int(time // hop_length), 360)]) OR
@@ -596,7 +637,7 @@ def infer(frames, model='full', device='cpu', embed=False, compile_model=False):
     # Load the model if necessary
     if not hasattr(infer, 'model') or not hasattr(infer, 'capacity') or \
        (hasattr(infer, 'capacity') and infer.capacity != model):
-        torchcrepe.load.model(device, model, compile_model)
+        torchcrepe.load.model(device, model, compile_model, compile_mode)
 
     # Move model to correct device (no-op if devices are the same)
     infer.model = infer.model.to(device)
