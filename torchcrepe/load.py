@@ -18,7 +18,8 @@ def model(device, capacity='full', compile_model=False, compile_mode='default'):
 
     Arguments
         device: The device to load the model on
-        capacity: One of 'tiny', 'small', 'medium', 'large', 'full'
+        capacity: One of 'tiny', 'small', 'medium', 'large', 'full',
+                  or 'full_speech'
         compile_model: Whether to use torch.compile for faster inference
                        (requires PyTorch 2.0+, recommended for batch processing)
         compile_mode: The torch.compile mode to use when compile_model is True.

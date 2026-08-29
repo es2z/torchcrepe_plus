@@ -5,6 +5,13 @@ This is a fork of the original [torchcrepe](https://github.com/maxrmorrison/torc
 ### Additional Model Sizes
 In the original Torchcrepe, only "tiny" and "full" weightings were available, but this version supports **"small"**, **"medium"**, and **"large"** weightings as well.
 
+### CREPE-speech Model
+This fork also provides **`full_speech`**, which uses the existing full CREPE
+architecture with the speech-trained weights published by the
+[FCN-f0 project](https://github.com/ardaillon/FCN-f0/tree/8a2b530af821319b6badca93c8a0ed1f14bfee3c/models/CREPE-speech).
+All preprocessing, decoding, embedding, inference, and `torch.compile` behavior
+is shared with the regular `full` model.
+
 ### torch.compile Support (PyTorch 2.0+)
 This fork adds optional `torch.compile` support for faster inference. You can enable compilation and select the optimization mode:
 
@@ -39,7 +46,8 @@ Pytorch implementation of the CREPE [1] pitch tracker. The original Tensorflow
 implementation can be found [here](https://github.com/marl/crepe/). The
 provided model weights were obtained by converting the "tiny" and "full" models
 using [MMdnn](https://github.com/microsoft/MMdnn), an open-source model
-management framework.
+management framework. The `full_speech` weights were converted from the
+CREPE-speech model published by Ardaillon and Roebel [3].
 
 
 ## Installation
@@ -69,7 +77,8 @@ hop_length = int(sr / 200.)
 fmin = 50
 fmax = 550
 
-# Select a model capacity--one of "tiny", "small", "medium", "large", or "full"
+# Select a model--one of "tiny", "small", "medium", "large", "full",
+# or "full_speech"
 model = 'tiny'
 
 # Choose a device to use for inference
@@ -221,7 +230,8 @@ optional arguments:
   --embed               Performs embedding instead of pitch prediction
   --fmin FMIN           The minimum frequency allowed
   --fmax FMAX           The maximum frequency allowed
-  --model MODEL         The model capacity. One of "tiny" or "full"
+  --model MODEL         The model capacity. One of "tiny", "small", "medium",
+                        "large", "full", or "full_speech"
   --decoder DECODER     The decoder to use. One of "argmax", "viterbi", or
                         "weighted_argmax"
   --gpu GPU             The gpu to perform inference on
@@ -249,3 +259,7 @@ Processing (ICASSP).
 “DDSP: Differentiable Digital Signal Processing,” in
 2020 International Conference on Learning
 Representations (ICLR).
+
+[3] L. Ardaillon and A. Roebel, “Fully-Convolutional Network for Pitch
+Estimation of Speech Signals,” in Interspeech, 2019. The converted weights are
+distributed under the MIT license in `torchcrepe/assets/CREPE-speech-LICENSE`.

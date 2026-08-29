@@ -61,7 +61,8 @@ def parse_args():
     parser.add_argument(
         '--model',
         default='full',
-        help='The model capacity. One of "tiny", "small", "medium", "large", or "full"')
+        help='The model capacity. One of "tiny", "small", "medium", "large", '
+             '"full", or "full_speech"')
     parser.add_argument(
         '--decoder',
         default='viterbi',

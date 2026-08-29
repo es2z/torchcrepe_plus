@@ -18,7 +18,7 @@ class Crepe(torch.nn.Module):
         super().__init__()
 
         # Model-specific layer parameters
-        if model == 'full':
+        if model in ('full', 'full_speech'):
             in_channels = [1, 1024, 128, 128, 128, 256]
             out_channels = [1024, 128, 128, 128, 256, 512]
             self.in_features = 2048
